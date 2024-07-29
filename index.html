@@ -176,7 +176,7 @@
 
         // Função para carregar dados do servidor
         function carregarDados() {
-            fetch('https://provasadjap.adaptable.io/usuarios')
+            fetch('https://provasadjap.adaptable.app/')
                 .then(response => response.json())
                 .then(data => {
                     usuarios = data.usuarios;
@@ -219,7 +219,7 @@
                 return;
             }
 
-            fetch('https://seu-nome-do-app.adaptable.io/cadastrar', {
+            fetch('https://provasadjap.adaptable.app/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
