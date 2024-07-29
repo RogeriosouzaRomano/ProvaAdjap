@@ -1,0 +1,12 @@
+{
+  "usuarios": [
+    {
+      "email": "adjap2017@gmail.com",
+      "senha": "1234"
+    },
+    {
+      "email": "romanorogerio26@gmail.com",
+      "senha": "3003"
+    }
+  ]
+}
