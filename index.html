@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>LoginADJAP</title>
+    <style>
+        input {
+            margin: 10px;
+        }
+        .alinharP{
+            text-align: right;
+            width: 300px;
+        }
+     #cxLogar{
+         display:none;
+         border:solid 2px black;
+         border-radius: 7px;
+         width: 390px;
+         margin: auto;
+         margin-top:60%;
+         
+         padding-left:-42px;
+     }  
+     #btLogar{
+         width: 200px;
+         height: 30px;
+         margin-left:94px;
+     } 
+      
+      
+            .lt1,.lt2,.lt3,.lt4,.lt5{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center ;
+            font-size: 60px;
+            
+            background: #ffd215;
+            color: #f2f2f2;
+            padding: 2px;
+        }
+          .cx{
+            display:flex;
+            margin:25%;
+            
+            width: 200px;
+            height: 61px;
+            margin-top:60%;
+            
+        }
+          #logo{
+            width: 50px;
+            position: absolute;
+            top: 20px;
+            left: -11px;
+        }
+      
+        
+        @keyframes pisca{
+       
+        0%{
+ 
+            
+            color: #5261a3;
+            opacity:1;
+            top:-40px;
+           
+            font-size: 80px;
+        }
+        
+        100%{
+        opacity:0;
+        color:#eaeaff;
+      font-size: 60px;
+            top: 0px;
+        }
+  
+        } 
+       
+        .lt1{
+        position:relative;
+            animation-name:pisca;
+            animation-duration:3s;
+            animation-delay:0.8s;
+            animation-iteration-count: 3;
+            
+            
+        }  
+        .lt2{
+        position:relative;
+            animation-name:pisca;
+            animation-duration:3s;
+            animation-delay:0.2s;
+            animation-iteration-count: 3;
+            
+            
+        }  
+        .lt3{
+        position:relative;
+            animation-name:pisca;
+            animation-duration:3s;
+            animation-delay:0.3s;
+            animation-iteration-count: 3;
+            
+            
+        }
+        .lt4{
+        position:relative;
+            animation-name:pisca;
+            animation-duration:3s;
+            animation-delay:0.4s;
+            animation-iteration-count: 3;
+            
+            
+        }
+       .lt5{
+        position:relative;
+            animation-name:pisca;
+            animation-duration:3s;
+            animation-delay:0.5s;
+            animation-iteration-count: 3;
+            
+            
+        } 
+        #btCadastrar{
+            border: none;
+        }
+        
+                
+    </style>
+</head>
+<body>
+    
+    
+    
+    <div class="container">
+        <img id="logo"src="1721990975434.png" alt="">
+      <div id="cx"class="cx" >  <p class="lt1">A</p><p class="lt2">D</p><p class="lt3">J</p><p class="lt4">A</p><p class="lt5">P</p>
+    </div>
+    </div>
+    
+    
+    
+    <div id="cxLogar">
+     <p class="alinharP">   
+    Email: <input id="inEmail" type="email" required></p>
+   <p class="alinharP"> Senha: <input id="inPass" type="password" required></p>
+    <input id="btLogar" type="button" value="Logar">
+    <input id="btCadastrar" type="button" value="Cadastrar">
+    </div>
+    <script>
+        
+        const     logo=document.getElementById("logo")
+        logo.style.width='250px';
+        function sumir() {
+        const cx=document.getElementById("cx")
+        
+       
+        cx.style.display='none';
+        const cxLogar=document.getElementById("cxLogar")
+        cx.style.display='none';
+        cxLogar.style.display='block';
+            
+        }
+        
+        setTimeout(sumir,6000)
+        
+        
+        function redirecionar() {
+           const myUrl=document.location.href='prova.html'
+       } 
+          
+        
+        
+        let usuarios = [];
+
+        // Função para carregar dados do servidor
+        function carregarDados() {
+            fetch('https://seu-nome-do-app.adaptable.io/usuarios')
+                .then(response => response.json())
+                .then(data => {
+                    usuarios = data.usuarios;
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar dados:', error);
+                });
+        }
+
+        function valida() {
+            const inEmail = document.getElementById("inEmail").value;
+            const inPass = document.getElementById("inPass").value;
+
+            const usuarioIndex = usuarios.findIndex(user => user.email === inEmail);
+
+            if (usuarioIndex !== -1 && usuarios[usuarioIndex].senha === inPass) {
+                if (usuarioIndex === 0) {
+                    alert('Bem Vindo Pastor Estanislau');
+                    setTimeout(redirecionar,500)
+                } else if (usuarioIndex === 1) {
+                    alert('Bem Vindo admin');setTimeout(redirecionar,500)
+                } else {
+                    alert('Bem Vindo usuário');setTimeout(redirecionar,500)
+                }
+            } else if (usuarioIndex === -1) {
+                alert('Email incorreto');
+            } else {
+                alert('Senha incorreta');
+            }
+        }
+
+        function cadastrar() {
+            const inEmail = document.getElementById("inEmail").value;
+            const inPass = document.getElementById("inPass").value;
+
+            // Verifica se o email está no formato correto
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(inEmail)) {
+                alert('Formato de email incorreto');
+                return;
+            }
+
+            fetch('https://seu-nome-do-app.adaptable.io/cadastrar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: inEmail, senha: inPass })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert(data.message);
+                    carregarDados(); // Atualizar lista de usuários após cadastro
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao cadastrar:', error);
+            });
+        }
+
+        const btLogar = document.getElementById("btLogar");
+        btLogar.addEventListener("click", valida);
+
+        const btCadastrar = document.getElementById("btCadastrar");
+        btCadastrar.addEventListener("click", cadastrar);
+
+        // Carregar dados ao iniciar
+        carregarDados();
+    </script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Título da página</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+       *{
+           margin: 0;
+           padding: 0;
+       }
+            .container{
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+        
+        
+           @media tv and (min-width:700px) and (orientation: landscape) { 
+           .container{width: 400px;
+           }}
+            
+        
+    </style>
+</head>
+<body>
+<div style="display:flex;text-align: right;margin-left:300px;">Pontos: <div id="resp2">0</div></div>
+<div style="margin: 20px;">
+    <label for="studentName">Nome do Aluno:</label>
+    <input type="text" id="studentName" name="studentName"><br>
+    <label for="studentClass">Turma:</label>
+    <input type="text" id="studentClass" name="studentClass"><br>
+</div class="container">
+<button onclick="generatePDF()">Imprimir Prova</button>
+<div class="container">
+<table class="table table-dark">
+  <tbody id="questions">
+    <!-- As perguntas serão geradas dinamicamente aqui -->
+  </tbody>
+</table>
+</div>
+
+<div id="resp"></div>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+    const questions = [
+        { question: "Qual arma Davi usou para derrubar Golias?", options: ["funda", "espada", "atiradeira", "arco"], correctIndex: 0, correctValue: 5 },
+        { question: "Qual é a capital da França?", options: ["Madrid", "Paris", "Londres", "Berlim"], correctIndex: 1, correctValue: 10 },
+        { question: "Quem pintou a Mona Lisa?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Michelangelo"], correctIndex: 2, correctValue: 8 },
+        { question: "Qual é o maior planeta do sistema solar?", options: ["Marte", "Terra", "Júpiter", "Saturno"], correctIndex: 2, correctValue: 7 },
+        { question: "Quem escreveu 'Dom Quixote'?", options: ["Miguel de Cervantes", "William Shakespeare", "Dante Alighieri", "Homer"], correctIndex: 0, correctValue: 9 },
+        { question: "Qual é a fórmula química da água?", options: ["CO2", "H2O", "O2", "CH4"], correctIndex: 1, correctValue: 6 },
+        { question: "Quem descobriu a penicilina?", options: ["Marie Curie", "Albert Einstein", "Alexander Fleming", "Isaac Newton"], correctIndex: 2, correctValue: 4 },
+        { question: "Qual é a língua oficial do Brasil?", options: ["Espanhol", "Português", "Inglês", "Francês"], correctIndex: 1, correctValue: 5 },
+        { question: "Quantos continentes existem no mundo?", options: ["5", "6", "7", "8"], correctIndex: 2, correctValue: 10 },
+        { question: "Qual é o oceano que banha o litoral leste do Brasil?", options: ["Oceano Pacífico", "Oceano Índico", "Oceano Atlântico", "Oceano Ártico"], correctIndex: 2, correctValue: 7 }
+    ];
+
+    const questionsContainer = document.getElementById('questions');
+
+    questions.forEach((q, index) => {
+        // Embaralha as opções de resposta
+        const shuffledOptions = q.options
+            .map((option, optIndex) => ({ option, optIndex }))
+            .sort(() => Math.random() - 0.5);
+
+        const questionHTML = `
+        <tr>
+            <th scope="col">${index + 1}) ${q.question}</th>
+        </tr>
+        ${shuffledOptions.map((optObj, optIndex) => `
+        <tr>
+            <th scope="row">${String.fromCharCode(97 + optIndex)})</th>
+            <td>${optObj.option}</td>
+            <td><input name="question${index}" data-value="${optObj.optIndex === q.correctIndex ? q.correctValue : 0}" type="radio" value="${optObj.option}"></td>
+        </tr>
+        `).join('')}
+        `;
+        questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+    });
+
+    const inputs = document.querySelectorAll('input[type="radio"]');
+    const resp2 = document.getElementById("resp2");
+    let pontos = 0;
+
+    function updatePoints() {
+        pontos = 0; 
+        inputs.forEach(input => {
+            if (input.checked) {
+                pontos += parseInt(input.getAttribute('data-value'));
+            }
+        });
+        resp2.textContent = pontos;
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('change', updatePoints);
+    });
+
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        let y = 30; // Posição inicial y
+
+        // Detalhes do aluno
+        const studentName = document.getElementById('studentName').value;
+        const studentClass = document.getElementById('studentClass').value;
+        const totalPoints = pontos; // Total de pontos calculados
+        
+
+        doc.setFontSize(17);
+        doc.text(`ADJAP`, 90, 20);
+        doc.setFontSize(9);
+        doc.text(`EBD JOVENS`, 90, 25);
+        doc.setFontSize(14);
+        doc.text(`Nome: ${studentName}`, 13, 35);
+        
+        y += 10;
+        doc.text(`Turma: ${studentClass}`, 100, 35);
+        doc.text(`Pontos: ${totalPoints}`, 160, 35); // Pontuação ao lado da turma
+        y += 20;
+
+        // Desenha borda para a primeira página
+        doc.rect(10, 10, 190, 277); // Rect(x, y, width, height)
+
+        questions.forEach((q, index) => {
+            if (y > 270) { // Verifica se precisamos de uma nova página
+                doc.addPage();
+                y = 20; // Reinicia a posição y para a nova página
+                doc.rect(10, 10, 190, 277); // Desenha borda para a nova página
+            }
+            doc.text(`${index + 1}) ${q.question}`, 15, y);
+            y += 10; // Incrementa a posição y para a próxima linha
+            inputs.forEach(input => {
+                if (input.name === `question${index}` && input.checked) {
+              doc.setFontSize(10);
+                  doc.text(`R`, 20, y-2);
+                   doc.setFontSize(14);
+                    doc.text(`: ${input.value}`, 24, y);
+                    y += 10;
+                }
+            });
+            y += 10; // Adiciona espaço extra entre as perguntas
+        });
+
+        if (y > 270) { // Verifica se precisamos de uma nova página
+            doc.addPage();
+            y = 20; // Reinicia a posição y para a nova página
+            doc.rect(10, 10, 190, 277); // Desenha borda para a nova página
+        }
+
+        doc.save("prova.pdf");
+    }
+</script>
+</body>
+</html>
