@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;  // Usando a variável de ambiente PORT
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -12,6 +12,7 @@ app.use(express.static(__dirname)); // Servir arquivos estáticos
 
 const dataFilePath = './dados.json';
 
+// Endpoint para obter usuários
 app.get('/usuarios', (req, res) => {
     fs.readFile(dataFilePath, 'utf8', (err, data) => {
         if (err) {
@@ -21,6 +22,7 @@ app.get('/usuarios', (req, res) => {
     });
 });
 
+// Endpoint para cadastrar novos usuários
 app.post('/cadastrar', (req, res) => {
     const novoUsuario = req.body;
 
@@ -47,7 +49,8 @@ app.post('/cadastrar', (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
+// Iniciar o servidor e ouvir no IP 0.0.0.0
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
-                 
+                          
